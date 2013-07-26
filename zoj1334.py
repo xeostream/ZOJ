@@ -28,4 +28,4 @@ while line != '':
 	line = raw_input()
 
 for result in results:
-	print '%7s' %result 
+	print '%7s' %result
