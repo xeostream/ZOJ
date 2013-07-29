@@ -31,12 +31,15 @@ while number != '0':
 		test = raw_input()
 		for y in test:
 			f_rotor += 1
+			'''
 			temp = third.index(y)
 			temp = base[temp]
 			temp = second.index(temp)
 			temp = base[temp]
 			temp = first.index(temp)
 			temp = (base[temp]).lower()
+			result.append(temp)'''
+			temp = (base[first.index(base[second.index(base[third.index(y)])])]).lower()
 			result.append(temp)
 			f_index.rotate(1)
 			for z in range(number):
@@ -66,4 +69,3 @@ for x in range(len(results)):
 	print 'Enigma %i:' %(x + 1)
 	print ''.join(results[x])
 	print
-sys.exit()
