@@ -1,54 +1,66 @@
 count = int(raw_input())
-results = []
 
-def movef(base, moves, i, x, y, row, col):
-	if i < len(moves):
-		if moves[i][2] == 'R' and y+moves[i][0] < col:
-			for j in range(1,min(moves[i][1]+1,col-y)):
-				if base[x][y+j] == '1': return False
-			for begin in range(moves[i][0], min(moves[i][1]+1, col-y)):
-				if movef(base, moves, i+1, x, y+begin, row, col): return True
-		elif moves[i][2] == 'L' and y-moves[i][0] >= 0:
-			for j in range(1, min(moves[i][1]+1, y+1)):
-				if base[x][y-j] == '1': return False
-			for begin in range(moves[i][0], min(moves[i][1]+1, y+1)):
-				if movef(base, moves, i+1, x, y-begin, row, col): return True
-		elif moves[i][2] == 'U' and x-moves[i][0] >= 0:
-			for j in range(1, min(moves[i][1]+1, x+1)):
-				if base[x-j][y] == '1': return False
-			for begin in range(moves[i][0], min(moves[i][1]+1, x+1)):
-				if movef(base, moves, i+1, x-begin, y, row, col): return True
-		elif moves[i][2] == 'D' and x+moves[i][0] < rol:
-			for j in range(1, min(moves[i][1]+1, rol-x)):
-				if base[x+j][y] == '1': return False
-			for begin in range(moves[i][0], min(moves[i][1]+1, rol-x)):
-				if movef(base, moves, i+1, x+begin, y, row, col): return True
-		else:
-			return False
-	else:
-		return True
+def initbase(row, col):
+	base = []
+	for r in range(row):
+		line = raw_input().split()[:col]
+		line = [int(l) for l in line]
+		base.append(line)
+	return base
 
+def initmove():
+	moves = []
+	while (True):
+		move = raw_input()
+		if move == '0 0': break
+		move = move.split()
+		move[0], move[1] = int(move[0]), int(move[1])
+		moves.append(move)
+	return moves
+
+def checknode(base, r, c, row, col):
+	if 0 <= r < row and 0 <= c < col and base[r][c] == 0: return True
+	return False
+
+def check(base, moves, i, r, c, row, col):
+	if i <len(moves):
+		if moves[i][2] == 'R':
+			for ro in range(1, moves[i][0]):
+				if not checknode(base, r+ro, c, row, col): return False
+			for ro in range(moves[i][0], moves[i][1]+1):
+				if not checknode(base, r+ro, c, row, col): return False
+				if check(base, moves, i+1, r+ro, c, row, col): return True
+		elif moves[i][2] == 'L':
+			for ro in range(1, moves[i][0]):
+				if not checknode(base, r-ro, c, row, col): return False
+			for ro in range(moves[i][0], moves[0][1]+1):
+				if not checknode(base, r-ro, c, row, col): return False
+				if check(base, moves, i+1, r+ro, c, row, col): return True
+		elif moves[i][2] == 'U':
+			for co in range(1, moves[i][0]):
+				if not checknode(base, r, c-co, row, col): return False
+			for co in range(moves[i][0], moves[i][1]+1):
+				if not checknode(base, r, c-co, row, col): return False
+				if check(base, moves, i+1, r, c-co, row, col): return True
+		elif moves[i][2] == 'D':
+			for co in range(1, moves[i][0]):
+				if not checknode(base, r, c+co, row, col): return False
+			for co in range(moves[i][0], moves[i][1]+1):
+				if not checknode(base, r, c+co, row, col): return False
+				if check(base, moves, i+1, r, c+co, row, col): return True
+	elif i == len(moves):
+		if checknode(base, r, c, row, col): return True
+		else: return False
+		
 for x in range(count):
-	base, moves = [], []
 	result = 0
 	row_col = raw_input().split()
 	row = int(row_col[0])
 	col = int(row_col[1])
-	for y in range(row):
-		base.append(raw_input().split())
-	while True:
-		move = raw_input().split()
-		if move[0] == move[1] == '0': break
-		move[0] = int(move[0])
-		move[1] = int(move[1])
-	moves.append(move)
-	for y in range(row):
-		for z in range(col):
-			position_y, position_z = y, z
-			if base[y][z] == '1': continue
-			elif movef(base, moves, 0, y, z, row, col):
+	base = initbase(row, col)
+	moves = initmove()
+	for r in range(row):
+		for c in range(col):
+			if base[r][c] == 0 and check(base, moves, 0, r, c, row, col):
 				result += 1
-	results.append(result)
-
-for r in results:
-	print r
+	print result
